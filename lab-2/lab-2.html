@@ -19,11 +19,11 @@
         </div>
         <div class="random-values">
             <label for="numOfValues">Кількість значень:</label>
-            <input value="10" type="number" id="numOfValues" name="numOfValues"><br><br>
+            <input value="100000" type="number" id="numOfValues" name="numOfValues"><br><br>
             <label for="minValue">Від:</label>
-            <input value="1" type="number" id="minValue" name="minValue"><br><br>
+            <input value="-100000" type="number" id="minValue" name="minValue"><br><br>
             <label for="maxValue">До:</label>
-            <input value="99" type="number" id="maxValue" name="maxValue"><br><br>
+            <input value="100000" type="number" id="maxValue" name="maxValue"><br><br>
             <button id="generateValuesButton">Згенерувати значення</button>
         </div>
         <button id="sortButton">Відсортувати</button>
@@ -31,6 +31,7 @@
     <div class="main">
 
         <textarea readonly id="sortResult" rows="5" cols="50" placeholder="Відсортований масив"></textarea><br>
+        <div id="time4alg"></div>
     </div>
 </body>
 </html>

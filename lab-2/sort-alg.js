@@ -13,11 +13,18 @@ window.onload = function() {
 
         console.log('Масив до сортування:', array);
 
+        const startTime = performance.now(); // Початковий час виконання алгоритму
+
         const sortedArray = sort(array);
+
+        const endTime = performance.now(); // Кінцевий час виконання алгоритму
+
+        const executionTime = endTime - startTime; // Обчислення часу виконання у мілісекундах
 
         console.log('Відсортований масив:', sortedArray);
 
         document.getElementById('sortResult').innerText = `${sortedArray}`;
+        document.getElementById('time4alg').innerText = `Час виконання алгоритму: ${executionTime} мілісекунд.`;
     }
 
     const fileInput = document.createElement('input');
@@ -40,12 +47,19 @@ window.onload = function() {
 
             console.log('Масив з файлу:', array);
 
+            const startTime = performance.now(); // Початковий час виконання алгоритму
+
             const sortedArray = sort(array);
+
+            const endTime = performance.now(); // Кінцевий час виконання алгоритму
+
+            const executionTime = endTime - startTime; // Обчислення часу виконання у мілісекундах
 
             console.log('Відсортований масив:', sortedArray);
 
             document.getElementById('inputArray').value = inputArray;
             document.getElementById('sortResult').innerText = `${sortedArray}`;
+            document.getElementById('time4alg').innerText = `Час виконання алгоритму: ${executionTime} мілісекунд.`;
         };
 
         reader.readAsText(file);
