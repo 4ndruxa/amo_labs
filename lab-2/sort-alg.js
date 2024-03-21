@@ -90,15 +90,22 @@ window.onload = function() {
 }
 
 function sort(arr) {
+    let operationsCount = 0; // Лічильник операцій
+
     for (let i = arr.length - 1; i > 0; i--) {
         let maxIndex = 0;
         for (let j = 1; j <= i; j++) {
+            operationsCount += 1; 
             if (arr[j] > arr[maxIndex]) {
                 maxIndex = j;
             }
         }
         // Обмін максимального елемента з елементом на позиції i
         [arr[i], arr[maxIndex]] = [arr[maxIndex], arr[i]];
+        operationsCount += 1; 
     }
+
+    document.getElementById('kstOP').innerText = `Кількість операцій: ${operationsCount}`;
+
     return arr;
 }
