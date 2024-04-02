@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Інтерполяція cos^2(x) методом Ньютона</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="interpolation.js"></script>
+</head>
+
+<body>
+    <a class="back" href="../index.html">На головну</a>
+    <div class="container">
+        <h2>Лабораторна робота №3</h2>
+        <img src="export.png" class="imagef2lab">
+        <div class="relative overflow-hidden shadow-md rounded-lg">
+        <div class="form">
+            <label for="a">a:</label>
+            <input type="number" id="a" value="0">
+            <label for="b">b:</label>
+            <input type="number" id="b" value="2">
+            <label for="n">Кількість вузлів:</label>
+            <input type="number" id="n" value="10">
+            <button id="calculate">Обчислити</button>
+            <button id="reset">Спочатку</button>
+        </div>
+        <div class="results">
+            <table id="table">
+                <thead>
+                    <tr>
+                        <th>x</th>
+                        <th>f(x)</th>
+                        <th>P(x)</th>
+                        <th>Похибка</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body"></tbody>
+            </table>
+            <div id="chart-container">
+                <canvas id="function-chart"></canvas>
+                <canvas id="interpolation-chart"></canvas>
+                <canvas id="error-chart"></canvas>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
