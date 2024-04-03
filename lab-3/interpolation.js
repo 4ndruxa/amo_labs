@@ -97,13 +97,12 @@ window.onload = function() {
       type: "line",
       data: {
         labels: nodes,
-        datasets: [
-          {
-            label: label,
-            data: values,
-            borderColor: color,
-          },
-        ],
+        datasets: [{
+          label: label,
+          data: values,
+          borderColor: color,
+          tension: 0.4, // Параметр плавності (ви можете змінити його)
+        }],
       },
       options: {
         scales: {
