@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Розв'язання нелінійних рівнянь методом половинного ділення</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+  </head>
+  <body>
+    <a class="back" href="../index.html">На головну</a>
+    <h1>Лабораторна робота №4</h1>
+    <h2>Розв’язання нелінійних рівнянь на ЕОМ</h2>
+    <p>Варіант: 3</p>
+    <p>Рівняння: x<sup>4</sup> + 5x - 3 = 0;</p>
+    <p>Метод: половинного ділення;</p>
+    <p>Очікуванні корені: -1.876; 0.578</p>
+    <label for="a">Початок відрізка (a):</label>
+    <input type="number" id="a" step="0.01" value="-2" />
+    <label for="b">Кінець відрізка (b):</label>
+    <input type="number" id="b" step="0.01" value="1" />
+    <label for="eps">Точність (ε):</label>
+    <input type="number" id="eps" step="0.000001" value="0.000001" />
+    <button onclick="solveEquation()">Розв'язати</button>
+    <button onclick="resetData()">Скинути дані</button>
+    <div>
+      <canvas id="fullChart"></canvas>
+      <canvas id="zoomChart"></canvas>
+    </div>
+    <div id="results"></div>
+
+    <script>
+      let chart, zoomChart;
+
+      function f(x) {
+        return Math.pow(x, 4) + 5 * x - 3;
+      }
+
+      function solveEquation() {
+        const a = parseFloat(document.getElementById("a").value);
+        const b = parseFloat(document.getElementById("b").value);
+        const eps = parseFloat(document.getElementById("eps").value);
+
+        const intervals = findIntervals(a, b);
+        const roots = [];
+
+        for (const interval of intervals) {
+          const root = bisectionMethod(interval[0], interval[1], eps);
+          roots.push(root);
+        }
+
+        displayResults(roots);
+        drawFullChart(roots);
+        drawZoomChart(a, b, roots);
+      }
+
+      function findIntervals(a, b) {
+        const intervals = [];
+        let start = a;
+        let end = a;
+
+        while (end < b) {
+          const fa = f(start);
+          end = start + 0.01;
+          const fb = f(end);
+
+          if (fa * fb < 0) {
+            intervals.push([start, end]);
+            start = end;
+          } else {
+            start = end;
+          }
+        }
+
+        return intervals;
+      }
+
+      function bisectionMethod(a, b, eps) {
+        let c = (a + b) / 2;
+
+        while (Math.abs(f(c)) > eps) {
+          if (f(a) * f(c) < 0) {
+            b = c;
+          } else {
+            a = c;
+          }
+          c = (a + b) / 2;
+        }
+
+        return c;
+      }
+
+      function displayResults(roots) {
+        const expectedRoots = [-1.876, 0.578]; // Expected root values
+        const resultsDiv = document.getElementById("results");
+        resultsDiv.innerHTML = "";
+
+        const h2 = document.createElement("h2");
+        h2.textContent = "Знайдені корені:";
+        resultsDiv.appendChild(h2);
+
+        const ul = document.createElement("ul");
+        for (let i = 0; i < roots.length; i++) {
+          const root = roots[i];
+          const expectedRoot = expectedRoots[i];
+          const error = Math.abs(root - expectedRoot); // Absolute error calculation
+          const li = document.createElement("li");
+          li.textContent = `x = ${root.toFixed(6)} (Похибка: ${error.toFixed(
+            6
+          )})`;
+          ul.appendChild(li);
+        }
+        resultsDiv.appendChild(ul);
+      }
+
+      function drawFullChart(roots) {
+        const ctx = document.getElementById("fullChart").getContext("2d");
+        chart = new Chart(ctx, {
+          type: "line",
+          data: {
+            labels: [],
+            datasets: [
+              {
+                label: "f(x) = x^4 + 5x - 3",
+                data: [],
+                borderColor: "rgba(75, 192, 192, 1)",
+                fill: false,
+              },
+              {
+                label: "Roots",
+                data: roots.map((root) => ({ x: root, y: 0 })),
+                borderColor: "rgba(255, 99, 132, 1)",
+                showLine: false,
+                pointRadius: 5,
+              },
+            ],
+          },
+          options: {
+            scales: {
+              x: {
+                type: "linear",
+                min: -5,
+                max: 5,
+              },
+            },
+          },
+        });
+
+        const xValues = [];
+        const yValues = [];
+        for (let x = -5; x <= 5; x += 0.1) {
+          xValues.push(x);
+          yValues.push(f(x));
+        }
+
+        chart.data.labels = xValues;
+        chart.data.datasets[0].data = yValues;
+        chart.update();
+      }
+
+      function drawZoomChart(a, b, roots) {
+        const ctx = document.getElementById("zoomChart").getContext("2d");
+        zoomChart = new Chart(ctx, {
+          type: "line",
+          data: {
+            labels: [],
+            datasets: [
+              {
+                label: "f(x) = x^4 + 5x - 3",
+                data: [],
+                borderColor: "rgba(75, 192, 192, 1)",
+                fill: false,
+              },
+              {
+                label: "Roots",
+                data: roots.map((root) => ({ x: root, y: 0 })),
+                borderColor: "rgba(255, 99, 132, 1)",
+                showLine: false,
+                pointRadius: 5,
+              },
+            ],
+          },
+          options: {
+            scales: {
+              x: {
+                type: "linear",
+                min: a,
+                max: b,
+              },
+            },
+          },
+        });
+
+        const xValues = [];
+        const yValues = [];
+        for (let x = a; x <= b; x += 0.1) {
+          xValues.push(x);
+          yValues.push(f(x));
+        }
+
+        zoomChart.data.labels = xValues;
+        zoomChart.data.datasets[0].data = yValues;
+        zoomChart.update();
+      }
+
+      function resetData() {
+        document.getElementById("a").value = -2;
+        document.getElementById("b").value = 1;
+        document.getElementById("eps").value = 0.000001;
+        document.getElementById("results").innerHTML = "";
+
+        if (chart) {
+          chart.destroy();
+        }
+
+        if (zoomChart) {
+          zoomChart.destroy();
+        }
+      }
+    </script>
+  </body>
+</html>
