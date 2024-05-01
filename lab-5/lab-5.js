@@ -1,52 +1,71 @@
 "use strict";
 
-function jacobi(A, b) {
+function isNonSingular(A) {
   const n = A.length;
+  const det = A[0][0] * ((A[1][1] * A[2][2]) - (A[2][1] * A[1][2])) -
+             A[0][1] * (A[1][0] * A[2][2] - A[2][0] * A[1][2]) +
+             A[0][2] * (A[1][0] * A[2][1] - A[2][0] * A[1][1]);
+  return det !== 0;
+}
 
-  for (let k = 0; k < n - 1; k++) {
-    let amax = Math.abs(A[k][k]);
-    let imax = k;
-
-    for (let i = k + 1; i < n; i++) {
-      if (Math.abs(A[i][k]) > amax) {
-        amax = Math.abs(A[i][k]);
-        imax = i;
+function isDiagonalDominant(A) {
+  const n = A.length;
+  for (let i = 0; i < n; i++) {
+    let sum = 0;
+    for (let j = 0; j < n; j++) {
+      if (i !== j) {
+        sum += Math.abs(A[i][j]);
       }
     }
-
-    if (imax !== k) {
-      [A[k], A[imax]] = [A[imax], A[k]];
-      [b[k], b[imax]] = [b[imax], b[k]];
-    }
-
-    for (let i = k + 1; i < n; i++) {
-      if (A[k][k] !== 0) {
-        const M = A[i][k] / A[k][k];
-        A[i] = A[i].map((val, j) => val - M * A[k][j]);
-        b[i] = b[i] - M * b[k];
-      }
+    if (Math.abs(A[i][i]) < sum) {
+      return false;
     }
   }
+  return true;
+}
 
-  const x = new Array(n).fill(0);
-  x[n - 1] = b[n - 1] / A[n - 1][n - 1];
+function jacobi(A, b, x0, tol, N) {
+  const n = A.length;
 
-  for (let i = n - 2; i >= 0; i--) {
-    let s = 0;
+  if (!isNonSingular(A) || !isDiagonalDominant(A)) {
+    alert("Помилка! Не справджуються умови!");
+    return;
+  }
 
-    for (let j = i + 1; j < n; j++) {
-      s += A[i][j] * x[j];
+  let x = x0.slice();
+  let iter = 0;
+
+  while (iter < N) {
+    const x_new = new Array(n).fill(0);
+
+    for (let i = 0; i < n; i++) {
+      let sum = 0;
+      for (let j = 0; j < n; j++) {
+        if (i !== j) {
+          sum += A[i][j] * x[j];
+        }
+      }
+      x_new[i] = (b[i] - sum) / A[i][i];
     }
 
-    x[i] = (b[i] - s) / A[i][i];
+    const diff = x_new.map((val, i) => Math.abs(val - x[i]));
+    const maxDiff = Math.max(...diff);
+
+    if (maxDiff < tol) {
+      break;
+    }
+
+    x = x_new;
+    iter++;
   }
 
   return x;
 }
 
 const clearingResult = (result) => {
-  return result.map((val, i) => ` x${i + 1} = ${val.toFixed(2)}`);
+  return result.map((val, i) => `x${i + 1} = ${val.toFixed(2)}`).join(' ');
 };
+
 
 const resultText = document.querySelector(".resultContainer h2 b");
 
@@ -64,15 +83,25 @@ document.querySelector(".resultExtended").addEventListener("click", () => {
   const b2 = Number(document.querySelector("#b2").value);
   const b3 = Number(document.querySelector("#b3").value);
 
+  if (isNaN(a11) || isNaN(a12) || isNaN(a13) || isNaN(a21) || isNaN(a22) || isNaN(a23) || isNaN(a31) || isNaN(a32) || isNaN(a33) || isNaN(b1) || isNaN(b2) || isNaN(b3)) {
+    alert("Помилка! Будь ласка, введіть числові значення.");
+    return;
+  }
+
   const A = [
     [a11, a12, a13],
     [a21, a22, a23],
-    [a31, a32, a33],
+    [a31, a32, a33]
   ];
   const B = [b1, b2, b3];
+  const x0 = [0, 0, 0]; // початкове наближення
+  const tol = 1e-6; // задана точність
+  const N = 1000; // максимальна кількість ітерацій
 
-  const result = jacobi(A, B);
-  const clearResult = clearingResult(result);
-  resultText.textContent = clearResult;
+  const result = jacobi(A, B, x0, tol, N);
+
+  if (result) {
+    const clearResult = clearingResult(result);
+    resultText.textContent = clearResult;
+  }
 });
-
